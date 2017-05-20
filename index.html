@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>QFE & QNH Calculator</title>
+
+    <!-- Vue -->
+    <script src="vue.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+    <!-- Algorithmia -->
+    <script src="//algorithmia.com/v1/clients/js/algorithmia-0.2.0.js" type="text/javascript"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container" role="main" id="qfe">
+        <div class="jumbotron">
+            <h1>QFE & QNH Calculator</h1>
+        </div>
+        <fieldset class="form-group">
+        <legend></legend>
+            <div class="row">
+                <div class="col-md-12">
+                    <p>
+                        <label for="altitude">Altitude (meters above sea level)</label>
+                        <input class="form-control" id="altitude" v-model.number="altitude" type="number" min="0">
+                    </p>
+                    <p>
+                        <label for="temperature">Temperature (celsius)</label>
+                        <input class="form-control" id="temperature" v-model.number="temperature" type="number">
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <p>
+                        <label for="qfe">QFE (hPa)</label>
+                        <input class="form-control" id="qfe" v-model.number="qfe" type="number" min="0">
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p>
+                        <label for="qnh">QNH (hPa)</label>
+                        <input class="form-control" id="qnh" v-model.number="qnh" type="number" min="0">
+                    </p>
+                </div>
+            </div>
+        </fieldset>
+        <div class="row">
+            <div class="col-md-6 text-center">
+                <div class="card">
+                    <div class="card-header">
+                        QNH
+                    </div>
+                    <div class="card-block">
+                        <h3 class="card-title">
+                            {{ qnh0 }}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="card">
+                    <div class="card-header">
+                        QFE
+                    </div>
+                    <div class="card-block">
+                        <h3 class="card-title">
+                            {{ qfe0 }}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!--
+        <div class="row">
+            <div class="col-md-6 text-center">
+                <div class="card">
+                    <div class="card-header">
+                        QFE at 0&#8451;
+                    </div>
+                    <div class="card-block">
+                        <h3 class="card-title">
+                            {{ qfe0 }}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 text-center">
+                <div class="card">
+                    <div class="card-header">
+                        QFE at 15&#8451;
+                    </div>
+                    <div class="card-block">
+                        <h3 class="card-title">
+                            {{ qfe15 }}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+-->
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <hr/>
+                <figure class="figure">
+                    <img src="qfe.png" class="figure-img img-fluid rounded" alt="QFE explanation">
+                    <figcaption class="figure-caption">Difference between setting altimiter to QNH and QFE</figcaption>
+                </figure>
+            </div>
+        </div>
+    </div>
+    <script>       
+        var app = new Vue({
+            el: '#qfe',
+            data: {
+                qnh: 1013,
+                qfe: 1013,
+                altitude: 0,
+                temperature: 15
+            },
+            computed: {
+                qfe0: function() {
+                    var T0 = this.temperature+273.15;
+                    var qfe = 1013.25*Math.pow(Math.pow((this.qnh/1013.25), 0.190263189) + ((this.altitude*-0.0065)/T0), 5.255877432);
+                    return Number(Math.round(qfe + 'e1') + 'e-1');
+                },
+                qnh0: function() {
+                    var T0 = this.temperature+273.15;
+                    var qnh = 1013.25*Math.pow(Math.pow((this.qfe/1013.25), 0.190263189) - (this.altitude*-0.0065)/T0, 5.255877432);
+                    return Number(Math.round(qnh + 'e1') + 'e-1');
+                }
+/*
+                qfe15: function() {
+                    var qfe = this.qnh - (this.altitude / 8.32265467383)
+                    return Number(Math.round(qfe + 'e1') + 'e-1');
+                },
+                qfe0: function() {
+                    var qfe = this.qnh - (this.altitude / 7.88801728927)
+                    return Number(Math.round(qfe + 'e1') + 'e-1');
+                },
+                qnh15: function() {
+                    var qnh = this.qfe + (this.altitude / 8.32265467383)
+                    return Number(Math.round(qnh + 'e1') + 'e-1');
+                },
+                qnh0: function() {
+                    var qnh = this.qfe + (this.altitude / 7.88801728927)
+                    return Number(Math.round(qnh + 'e1') + 'e-1');
+                }
+*/
+            }
+        })
+
+        var input = {
+            "lat": "0",
+            "lon": "0"
+        };
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(setPosition);
+        }
+
+        function setPosition(position) {
+            input.lat = String(position.coords.latitude);
+            input.lon = String(position.coords.longitude);
+
+            var algorithmia = new Algorithmia.client("YOUR_API_KEY");
+            algorithmia.algo("algo://Gaploid/Elevation/0.3.6")
+                .pipe(input)
+                .then(function(output) {
+                    app.altitude = JSON.parse(output.result).elev;
+                });
+        }
+    </script>
+</body>
+
+</html>
