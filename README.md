@@ -4,6 +4,8 @@ Calculate QFE and/or QNH value from QNH and/or QFE, Altitude above sea level and
 
 Altitude can be automatically provided by [Algorithmia Gaploid/Elevation API](https://algorithmia.com/algorithms/Gaploid/Elevation) (Algorithmia API key needed). Latitude and longitude needed for elevation API are provided from browser geolocalization (HTTPS needed for some browsers).
 
+![Screenshot](screenshot.png?raw=true)
+
 If you want to use altitude from Algorithmia you need to enter your API key in index.html:
 
 ```javascriptvar
