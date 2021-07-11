@@ -177,9 +177,18 @@
             input.lon = String(position.coords.longitude);
             
             axios
-                .get(`https://elevation-api.io/api/elevation?points=${input.lat},${input.lon}`)
-                //.get(`https://api.elevationapi.com/api/Elevation?lat=${input.lat}&lon=${input.lon}`)
-                .then(response => (app.altitude = response.data.elevations[0].elevation))
+                // api.open-elevation.com - can be slow, but free and accurate (~30m)
+                .get(`https://api.open-elevation.com/api/v1/lookup?locations=${input.lat},${input.lon}`)
+                .then(response => (app.altitude = response.data.results[0].elevation))
+                
+                // elevation-api.io - fast, but free version has very low accuraccy (5km)
+                //.get(`https://elevation-api.io/api/elevation?points=${input.lat},${input.lon}`)
+                //.then(response => (app.altitude = response.data.elevations[0].elevation))
+                
+                // open.mapquestapi.com - fast, free and accurate (~30m)  - developr API key is needed (generate at https://developer.mapquest.com/)
+                //.get(`https://open.mapquestapi.com/elevation/v1/profile?key=YOUR_API_KEY_HERE&latLngCollection=${input.lat},${input.lon}`)
+                //.then(response => (app.altitude = response.data.elevationProfile[0].height))
+                
         }
     </script>
 </body>
