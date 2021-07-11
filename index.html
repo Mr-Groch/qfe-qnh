@@ -10,15 +10,15 @@
 
     <!-- Vue -->
     <script src="vue.min.js"></script>
+    
+    <!-- Axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js" crossorigin="anonymous"></script>
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-
-    <!-- Algorithmia -->
-    <script src="//algorithmia.com/v1/clients/js/algorithmia-0.2.0.js" type="text/javascript"></script>
 
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -175,13 +175,11 @@
         function setPosition(position) {
             input.lat = String(position.coords.latitude);
             input.lon = String(position.coords.longitude);
-
-            var algorithmia = new Algorithmia.client("YOUR_API_KEY");
-            algorithmia.algo("algo://Gaploid/Elevation/0.3.6")
-                .pipe(input)
-                .then(function(output) {
-                    app.altitude = JSON.parse(output.result).elev;
-                });
+            
+            axios
+                .get(`https://elevation-api.io/api/elevation?points=${input.lat},${input.lon}`)
+                //.get(`https://api.elevationapi.com/api/Elevation?lat=${input.lat}&lon=${input.lon}`)
+                .then(response => (app.altitude = response.data.elevations[0].elevation))
         }
     </script>
 </body>
